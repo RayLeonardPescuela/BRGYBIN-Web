@@ -13,6 +13,33 @@ const TYPES = [
 
 const typeMeta = (key) => TYPES.find((t) => t.key === key) || TYPES[4];
 
+// Mirrors canViewAdminPanel in BRNGYBIN/config/roles.js. The two projects
+// share one Firestore and intentionally mirror each other, so keep this in
+// step with that file.
+const isStaff = (u) => u?.role === "admin" || u?.role === "collector";
+
+/**
+ * How many residents have opened a notification.
+ *
+ * The app records read state per-user in a `readBy` uid array. It used to
+ * write ONE shared `read` boolean, which meant the first resident to open a
+ * broadcast marked it read for the WHOLE barangay — so the badge that used
+ * to sit here could only ever pretend to know. That is why this now counts
+ * distinct readers instead of trusting a single flag.
+ *
+ * Legacy docs still carry `read`. A legacy `read: true` meant everyone had
+ * effectively read it, so it counts as the full resident body — matching how
+ * the app's isRead() still honours it. A legacy `false` means nobody.
+ *
+ * Only resident uids are counted, so deleted accounts and staff taps cannot
+ * push the number above the denominator.
+ */
+const countReadByResidents = (n, residentIds) => {
+  if (n.read === true) return residentIds.length;
+  const readers = new Set(Array.isArray(n.readBy) ? n.readBy : []);
+  return residentIds.filter((id) => readers.has(id)).length;
+};
+
 const fmtDateTime = (value) => {
   if (!value) return "";
   const d = new Date(value);
@@ -27,6 +54,7 @@ export default function Notifications() {
   const [selectedSitio, setSelectedSitio] = useState("");
   const [sitios, setSitios] = useState([]);
   const [sent, setSent] = useState([]);
+  const [residentIds, setResidentIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -38,12 +66,20 @@ export default function Notifications() {
 
   const load = async () => {
     try {
-      const [cfg, snap] = await Promise.all([
+      const [cfg, snap, usersSnap] = await Promise.all([
         db.collection("config").doc("sitios").get(),
         db.collection("notifications").orderBy("createdAt", "desc").limit(20).get(),
+        db.collection("users").get(),
       ]);
       setSitios(cfg.exists ? cfg.data().names || [] : []);
       setSent(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+
+      // Denominator for the read count. Staff can open notifications too,
+      // but what an admin wants to know is how many of their RESIDENTS saw
+      // it, so staff are excluded from both sides of the ratio.
+      setResidentIds(
+        usersSnap.docs.filter((d) => !isStaff(d.data())).map((d) => d.id)
+      );
     } catch (err) {
       console.log("Error loading notifications:", err);
     } finally {
@@ -67,7 +103,10 @@ export default function Notifications() {
         sitio: selectedSitio || "",
         sentBy: userData?.name || "Admin",
         createdAt: new Date().toISOString(),
-        read: false,
+        // No `read` flag. Read state is per-user in a `readBy` uid array
+        // written by the app, so a broadcast starts unread for everyone
+        // simply by having no readers yet. Writing `read: false` here would
+        // be dead weight that only invites the old shared-flag bug back.
       });
       setTitle("");
       setMessage("");
@@ -187,6 +226,7 @@ export default function Notifications() {
             sent.map((n) => {
               const meta = typeMeta(n.type);
               const Icon = meta.icon;
+              const readers = countReadByResidents(n, residentIds);
               return (
                 <div className="list-row" key={n.id}>
                   <div className="list-icon" style={{ background: meta.color + "22", color: meta.color }}>
@@ -199,8 +239,14 @@ export default function Notifications() {
                       {fmtDateTime(n.createdAt)} · {n.sitio || "All sitios"} · by {n.sentBy || "Admin"}
                     </div>
                   </div>
-                  <span className={"badge " + (n.read ? "badge-green" : "badge-grey")}>
-                    {n.read ? "read" : "unread"}
+                  {/* A count, not a boolean. "0 of 120 read" tells the
+                      admin whether a broadcast actually landed; a bare
+                      "unread" never did. */}
+                  <span
+                    className={"badge " + (readers > 0 ? "badge-green" : "badge-grey")}
+                    title={`${readers} of ${residentIds.length} residents have opened this`}
+                  >
+                    {readers} of {residentIds.length} read
                   </span>
                 </div>
               );
