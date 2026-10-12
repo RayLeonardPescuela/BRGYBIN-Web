@@ -100,7 +100,7 @@ export default function Login() {
           <div className="brand-icon lg logo">
             <img src="/images/garbagecan.png" alt="" />
           </div>
-          <h1>BRNGYBIN</h1>
+          <h1>BRGYBIN</h1>
           <p>Barangay Waste Management · Admin Portal</p>
         </div>
 

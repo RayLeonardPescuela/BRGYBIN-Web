@@ -50,7 +50,7 @@ export default function Layout() {
             <img src="/images/garbagecan.png" alt="" />
           </div>
           <div className="brand-text">
-            <div className="brand-name">BRNGYBIN</div>
+            <div className="brand-name">BRGYBIN</div>
             <div className="brand-sub">Admin Portal</div>
           </div>
         </div>

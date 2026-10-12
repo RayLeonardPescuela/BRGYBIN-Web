@@ -1,6 +1,6 @@
 // ============================================================
 // Single source of truth for app roles and permissions.
-// Mirrors BRNGYBIN/config/roles.js — keep both files in sync.
+// Mirrors BRGYBIN/config/roles.js — keep both files in sync.
 //
 // The WEB PORTAL is Main Admin only (role === "admin").
 // ============================================================

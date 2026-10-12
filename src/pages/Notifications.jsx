@@ -13,7 +13,7 @@ const TYPES = [
 
 const typeMeta = (key) => TYPES.find((t) => t.key === key) || TYPES[4];
 
-// Mirrors canViewAdminPanel in BRNGYBIN/config/roles.js. The two projects
+// Mirrors canViewAdminPanel in BRGYBIN/config/roles.js. The two projects
 // share one Firestore and intentionally mirror each other, so keep this in
 // step with that file.
 const isStaff = (u) => u?.role === "admin" || u?.role === "collector";

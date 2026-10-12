@@ -1,6 +1,6 @@
-# BRNGYBIN — Admin Web Portal
+# BRGYBIN — Admin Web Portal
 
-Web administration site for the BRNGYBIN barangay waste-management app.
+Web administration site for the BRGYBIN barangay waste-management app.
 **Main Admin only** — collectors and residents are blocked from signing in.
 
 Built with **React + Vite + React Router** and the Firebase compat SDK
