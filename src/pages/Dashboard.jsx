@@ -10,6 +10,7 @@ import {
   ChevronRight,
   MapPin,
   Inbox,
+  ReceiptText,
 } from "lucide-react";
 import { db } from "../config/firebase";
 import { useAuth } from "../context/AuthContext";
@@ -183,6 +184,10 @@ export default function Dashboard() {
           </h2>
           <p className="muted">Here's what's happening in the barangay today.</p>
         </div>
+        {/* Shortcut to the reward receipts (also in the sidebar) */}
+        <Link className="btn btn-primary" to="/receipts">
+          <ReceiptText size={16} /> Reward Receipts
+        </Link>
       </div>
 
       <div className="announce-banner">

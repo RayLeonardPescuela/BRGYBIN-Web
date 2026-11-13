@@ -6,6 +6,7 @@ import {
   Users,
   Gift,
   History,
+  ReceiptText,
   Megaphone,
   Bell,
   LogOut,
@@ -21,6 +22,7 @@ const NAV = [
   { to: "/users", label: "Users", icon: Users },
   { to: "/rewards", label: "Rewards", icon: Gift },
   { to: "/history", label: "History", icon: History },
+  { to: "/receipts", label: "Receipts", icon: ReceiptText },
   { to: "/announcements", label: "Announcements", icon: Megaphone },
   { to: "/notifications", label: "Notifications", icon: Bell },
 ];
@@ -32,6 +34,7 @@ const TITLES = {
   "/users": "Users & Sitios",
   "/rewards": "Rewards",
   "/history": "Collector QR History",
+  "/receipts": "Reward Receipts",
   "/announcements": "Announcements",
   "/notifications": "Notifications",
 };

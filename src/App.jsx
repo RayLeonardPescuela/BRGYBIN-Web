@@ -9,6 +9,7 @@ import Complaints from "./pages/Complaints";
 import Users from "./pages/Users";
 import Rewards from "./pages/Rewards";
 import History from "./pages/History";
+import Receipts from "./pages/Receipts";
 import Announcements from "./pages/Announcements";
 import Notifications from "./pages/Notifications";
 
@@ -77,6 +78,7 @@ export default function App() {
         <Route path="users" element={<Users />} />
         <Route path="rewards" element={<Rewards />} />
         <Route path="history" element={<History />} />
+        <Route path="receipts" element={<Receipts />} />
         <Route path="announcements" element={<Announcements />} />
         <Route path="notifications" element={<Notifications />} />
       </Route>
